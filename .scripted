@@ -6,6 +6,6 @@
 			"browser": true
 		},
 		
-		"global": [ "require", "console", "Buffer" ]
+		"global": [ "require", "console", "Buffer", "exports"]
 	}
 }

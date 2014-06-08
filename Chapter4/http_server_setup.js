@@ -1,4 +1,5 @@
 var http = require('http');
+var formidable = require('formidable');
 
 var server = http.createServer(function(req, res){
 
@@ -31,9 +32,40 @@ var server = http.createServer(function(req, res){
 	}
 
 	function upload(req, res) {
-		// upload logic
+
+		if (!isFormData(req)) {
+			
+			res.statusCode = 400;
+			res.end('Bad Request: expecting multipart/form-data');
+			return;
+		}
+		
+		var form = new formidable.IncomingForm();
+		
+		form.parse(req, function(err, fields, files){
+			
+			console.log(fields);
+			console.log(files);
+			res.end('upload complete!');
+			
+			// TODO: Report progress to client using socket.io. Can do this 
+			// after the socket.io chapter.
+		});		
+		
+		form.on('progress', function(bytesReceived, bytesExpected){
+			
+			var percent = Math.floor(bytesReceived / bytesExpected * 100);
+			console.log(percent);
+		});
+		
+		// Private functions.
+		
+		function isFormData(req) {
+			
+			var type = req.headers['content-type'] || '';
+			return (type.indexOf('multipart/form-data') === 0);
+		}	
 	}
-	
 });
 
 server.listen(3000, function() {
